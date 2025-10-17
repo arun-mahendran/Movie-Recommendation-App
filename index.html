@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie Recommendation App</title>
+<style>
+  body {
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    background: radial-gradient(circle at top left, #0f0f0f, #1a1a1a);
+    color: #f5f5f5;
+  }
+  header {
+    text-align: center;
+    padding: 25px;
+    font-size: 2rem;
+    color: #ffcc00;
+    background: linear-gradient(90deg, #111, #222);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+  }
+  .controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 15px;
+    background: #111;
+  }
+  .controls input, .controls select {
+    padding: 10px;
+    margin: 8px;
+    border-radius: 6px;
+    border: none;
+    font-size: 1rem;
+    background: #222;
+    color: #fff;
+  }
+  .container {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 20px;
+    padding: 20px;
+  }
+  .movie-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 20px;
+  }
+  .movie-card, .watchlist-card {
+    background: #1e1e1e;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    transition: transform 0.3s;
+  }
+  .movie-card:hover {
+    transform: scale(1.05);
+  }
+  .movie-card img, .watchlist-card img {
+    width: 100%;
+    height: 340px;
+    object-fit: cover;
+  }
+  .movie-info, .watchlist-info {
+    padding: 15px;
+    text-align: center;
+  }
+  .movie-info h3, .watchlist-info h3 {
+    margin: 10px 0;
+    color: #ffcc00;
+  }
+  .movie-info p, .watchlist-info p {
+    margin: 5px 0;
+    color: #ccc;
+  }
+  .btn {
+    background: #ff4081;
+    border: none;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  .btn:hover {
+    background: #ff80ab;
+  }
+  .watchlist {
+    background: #111;
+    padding: 10px;
+    border-radius: 10px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .watchlist h3 {
+    text-align: center;
+    color: #ffcc00;
+    margin-bottom: 10px;
+  }
+  .watchlist-card button {
+    background: #ff4081;
+    border: none;
+    color: #fff;
+    padding: 5px 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  footer {
+    text-align: center;
+    padding: 15px;
+    background: #111;
+    color: #888;
+  }
+  @media (max-width: 900px) {
+    .container { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>🎬 Movie Recommendation App</header>
+
+<div class="controls">
+  <input type="text" id="searchInput" placeholder="Search movie...">
+  <select id="genreSelect">
+    <option value="all">All Genres</option>
+    <option value="Action">Action</option>
+    <option value="Drama">Drama</option>
+    <option value="Comedy">Comedy</option>
+    <option value="Romance">Romance</option>
+    <option value="Sci-Fi">Sci-Fi</option>
+  </select>
+</div>
+
+<div class="container">
+  <div class="movie-container" id="movieContainer"></div>
+
+  <div class="watchlist">
+    <h3>Watchlist</h3>
+    <div id="watchlistContainer"></div>
+  </div>
+</div>
+
+<footer>© 2025 Movie Recommendation App</footer>
+
+<script>
+const movies = [
+  { title: "Avatar", genre: "Sci-Fi", rating: 7.9, img: "https://image.tmdb.org/t/p/w500/kyeqWdyUXW608qlYkRqosgbbJyK.jpg" },
+  { title: "The Dark Knight", genre: "Action", rating: 9.0, img: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg" },
+  { title: "Interstellar", genre: "Sci-Fi", rating: 8.6, img: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg" },
+  { title: "Titanic", genre: "Romance", rating: 7.8, img: "https://image.tmdb.org/t/p/w500/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg" },
+  { title: "Inception", genre: "Action", rating: 8.8, img: "https://image.tmdb.org/t/p/w500/edv5CZvWj09upOsy2Y6IwDhK8bt.jpg" },
+  { title: "The Avengers", genre: "Action", rating: 8.0, img: "https://image.tmdb.org/t/p/w500/RYMX2wcKCBAr24UyPD7xwmjaTn.jpg" },
+  { title: "Forrest Gump", genre: "Drama", rating: 8.8, img: "https://image.tmdb.org/t/p/w500/saHP97rTPS5eLmrLQEcANmKrsFl.jpg" },
+  { title: "The Godfather", genre: "Drama", rating: 9.2, img: "https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg" },
+  { title: "Guardians of the Galaxy", genre: "Comedy", rating: 8.0, img: "https://image.tmdb.org/t/p/w500/r7vmZjiyZw9rpJMQJdXpjgiCOk9.jpg" },
+  { title: "La La Land", genre: "Romance", rating: 8.0, img: "https://image.tmdb.org/t/p/w500/uDO8zWDhfWwoFdKS4fzkUJt0Rf0.jpg" }
+];
+
+function displayMovies(filter = "all", search = "") {
+  const container = document.getElementById("movieContainer");
+  container.innerHTML = "";
+  const filtered = movies.filter(m =>
+    (filter === "all" || m.genre === filter) &&
+    m.title.toLowerCase().includes(search.toLowerCase())
+  );
+  filtered.forEach(m => {
+    const card = document.createElement("div");
+    card.className = "movie-card";
+    card.innerHTML = `
+      <img src="${m.img}" alt="${m.title}">
+      <div class="movie-info">
+        <h3>${m.title}</h3>
+        <p>Genre: ${m.genre}</p>
+        <p>⭐ ${m.rating}</p>
+        <button class="btn" onclick="addToWatchlist('${m.title}')">+ Watchlist</button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function displayWatchlist() {
+  const container = document.getElementById("watchlistContainer");
+  container.innerHTML = "";
+  const list = JSON.parse(localStorage.getItem("watchlist")) || [];
+  if(list.length === 0) {
+    container.innerHTML = "<p style='color:#888;text-align:center;'>No movies added yet.</p>";
+    return;
+  }
+  list.forEach(title => {
+    const movie = movies.find(m => m.title === title);
+    if(movie) {
+      const card = document.createElement("div");
+      card.className = "watchlist-card";
+      card.style.marginBottom = "10px";
+      card.innerHTML = `
+        <img src="${movie.img}" alt="${movie.title}">
+        <div class="watchlist-info">
+          <h3>${movie.title}</h3>
+          <p>Genre: ${movie.genre}</p>
+          <button onclick="removeFromWatchlist('${movie.title}')">Remove</button>
+        </div>
+      `;
+      container.appendChild(card);
+    }
+  });
+}
+
+function addToWatchlist(title) {
+  let list = JSON.parse(localStorage.getItem("watchlist")) || [];
+  if(!list.includes(title)) {
+    list.push(title);
+    localStorage.setItem("watchlist", JSON.stringify(list));
+    displayWatchlist();
+  } else {
+    alert(`${title} is already in your Watchlist.`);
+  }
+}
+
+function removeFromWatchlist(title) {
+  let list = JSON.parse(localStorage.getItem("watchlist")) || [];
+  list = list.filter(t => t !== title);
+  localStorage.setItem("watchlist", JSON.stringify(list));
+  displayWatchlist();
+}
+
+document.getElementById("searchInput").addEventListener("input", e => {
+  const genre = document.getElementById("genreSelect").value;
+  displayMovies(genre, e.target.value);
+});
+document.getElementById("genreSelect").addEventListener("change", e => {
+  const search = document.getElementById("searchInput").value;
+  displayMovies(e.target.value, search);
+});
+
+// Initial display
+displayMovies();
+displayWatchlist();
+</script>
+
+</body>
+</html>
