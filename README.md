@@ -2,7 +2,7 @@
 
 A front-end demo web application that lets users browse movies, get recommendations, and maintain a watchlist. The app uses sample movie data and stores user preferences locally in the browser.
 
-Features
+## Features
 
 Browse movies with posters, genres, and ratings.
 
@@ -18,7 +18,7 @@ Rate movies (1–5 stars) to influence recommendations.
 
 Responsive and visually appealing dark-themed UI.
 
-Technologies Used
+## Technologies Used
 
 Frontend: HTML5, CSS3, JavaScript
 
@@ -30,7 +30,7 @@ Data: Sample movie dataset with poster URLs (TMDb images)
 
 Deployment: Can be hosted on GitHub Pages or any static web host
 
-Installation & Usage
+## Installation & Usage
 
 Clone or download this repository.
 
@@ -42,14 +42,7 @@ Click "+ Watchlist" to save a movie to your personal watchlist.
 
 Click Get Recommendations to view suggested movies based on your saved list.
 
-File Structure
-/Movie-Recommendation-App
-│
-├── index.html         # Main HTML file with embedded CSS & JS
-├── README.md          # Project overview and instructions
-└── assets/            # Optional folder for images or additional resources
-
-How It Works
+## How It Works
 
 The app loads a sample dataset of movies with poster URLs and metadata.
 
@@ -61,7 +54,7 @@ Recommendations are generated based on the user’s watchlist and ratings.
 
 The UI is fully responsive and works across desktop and mobile devices.
 
-Future Enhancements
+## Future Enhancements
 
 Integrate with a real movie API (e.g., TMDb) to fetch live data.
 
